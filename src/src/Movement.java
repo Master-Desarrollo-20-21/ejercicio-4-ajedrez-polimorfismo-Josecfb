@@ -10,12 +10,22 @@ public class Movement {
 	}
 
 	public MatchResult performe(Board board, Color colorPlayer) {
+		
 		if (thereIsPiece(board)) {
 			return MatchResult.INVALID;
 		}		
 		Square squareOrigin = board.getSquare(origin);
 		Square squareDestination = board.getSquare(destination);		
 
+		if (squareOrigin.getPiece().isPawn()) {
+			if (origin.hasOneStepDiagonalDirectionWith(destination) 
+					&& !squareDestination.isEmpty()
+					&& squareDestination.getPiece().getColor()!= colorPlayer) {
+				squareOrigin.moveCotainedPieceTo(squareDestination);
+				return MatchResult.CAPTURE;
+			}
+		}
+		
 		if (squareOrigin.isEmpty()) {
 			return MatchResult.INVALID;
 		}
@@ -51,23 +61,9 @@ public class Movement {
 		if (board.getSquare(origin).getPiece().isKnight()) {
 			return false;
 		}
-		
-		if (destination.getColumn() - origin.getColumn()<=1 && destination.getRow()-origin.getRow()<=1) {
-			return false;
-		} 
-		
-		int columnIncrement, rowIncrement;
-		if (destination.getColumn() == origin.getColumn()) {
-			columnIncrement=0;
-		} else {
-			columnIncrement=Math.abs(destination.getColumn()-origin.getColumn())/(destination.getColumn()-origin.getColumn());
-		}
-		
-		if (destination.getRow()==origin.getRow()) {
-			rowIncrement=0;
-		} else {
-			rowIncrement=Math.abs(destination.getRow()-origin.getRow())/(destination.getRow()-origin.getRow());
-		}
+
+		int rowIncrement=calculateIncrement(destination.getRow()-origin.getRow());
+		int columnIncrement=calculateIncrement(destination.getColumn()-origin.getColumn());
 		
 		int row=origin.getRow()+rowIncrement;
 		int column=origin.getColumn()+columnIncrement;
@@ -80,6 +76,18 @@ public class Movement {
 			column+=columnIncrement;
 		}
 		return false;
+	}
+	
+	private int calculateIncrement(int distance) {
+		if (distance==0) {
+			return 0;
+		}else {
+			if (distance<0) {
+				return -1;
+			}else {
+				return 1;
+			}
+		}
 	}
 
 }

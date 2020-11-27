@@ -14,10 +14,21 @@ public class Pawn extends Piece {
 		this.setUnicodePiece(unicodePiece);
 	}
 	
-	@Override
-	public boolean isValidMoveRule(Coordinate origin, Coordinate destination) {
-		return origin.hasOneStepVerticalDirectionWith(destination);
+	protected boolean isPawn() {
+		return true;
 	}
 	
+	@Override
+	public boolean isValidMoveRule(Coordinate origin, Coordinate destination) {
+		return origin.hasOneStepVerticalDirectionWith(destination) 
+				&& !moveBack(origin, destination);
+	}
 	
+	private boolean moveBack(Coordinate origin, Coordinate destination) {
+		if(this.getColor().equals(Color.WHITE)) {
+			return destination.getRow()-origin.getRow()<0;
+		} else {
+			return destination.getRow()-origin.getRow()>0;
+		}
+	}
 }
